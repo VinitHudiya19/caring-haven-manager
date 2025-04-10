@@ -7,7 +7,8 @@ import os
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-CORS(app)
+# Update CORS to allow requests from any origin
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Database configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:password@localhost/balsadan'
@@ -57,6 +58,15 @@ class Member(db.Model):
     phone = db.Column(db.String(20), nullable=False)
     email = db.Column(db.String(100), nullable=False)
     joined_date = db.Column(db.DateTime, default=datetime.utcnow)
+
+class Expense(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    description = db.Column(db.String(255), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    expense_date = db.Column(db.DateTime, default=datetime.utcnow)
+    category = db.Column(db.String(100), nullable=False)
+    approved_by = db.Column(db.String(100))
+    receipt_url = db.Column(db.String(255))
 
 # Authentication Routes
 @app.route('/api/login', methods=['POST'])
@@ -251,17 +261,78 @@ def delete_member(member_id):
     
     return jsonify({'message': 'Member deleted successfully'})
 
+# Expense Routes
+@app.route('/api/expenses', methods=['GET'])
+def get_expenses():
+    expenses = Expense.query.all()
+    result = []
+    
+    for expense in expenses:
+        result.append({
+            'id': expense.id,
+            'description': expense.description,
+            'amount': expense.amount,
+            'expense_date': expense.expense_date,
+            'category': expense.category,
+            'approved_by': expense.approved_by,
+            'receipt_url': expense.receipt_url
+        })
+        
+    return jsonify(result)
+
+@app.route('/api/expenses', methods=['POST'])
+def add_expense():
+    data = request.json
+    new_expense = Expense(
+        description=data['description'],
+        amount=data['amount'],
+        category=data['category'],
+        approved_by=data.get('approved_by', ''),
+        receipt_url=data.get('receipt_url', '')
+    )
+    
+    db.session.add(new_expense)
+    db.session.commit()
+    
+    return jsonify({'id': new_expense.id, 'message': 'Expense added successfully'}), 201
+
+@app.route('/api/expenses/<int:expense_id>', methods=['PUT'])
+def update_expense(expense_id):
+    expense = Expense.query.get_or_404(expense_id)
+    data = request.json
+    
+    expense.description = data.get('description', expense.description)
+    expense.amount = data.get('amount', expense.amount)
+    expense.category = data.get('category', expense.category)
+    expense.approved_by = data.get('approved_by', expense.approved_by)
+    expense.receipt_url = data.get('receipt_url', expense.receipt_url)
+    
+    db.session.commit()
+    
+    return jsonify({'message': 'Expense updated successfully'})
+
+@app.route('/api/expenses/<int:expense_id>', methods=['DELETE'])
+def delete_expense(expense_id):
+    expense = Expense.query.get_or_404(expense_id)
+    
+    db.session.delete(expense)
+    db.session.commit()
+    
+    return jsonify({'message': 'Expense deleted successfully'})
+
 @app.route('/api/dashboard/stats', methods=['GET'])
 def get_dashboard_stats():
     orphan_count = Orphan.query.count()
     adopted_count = Orphan.query.filter_by(is_adopted=True).count()
     total_donations = db.session.query(db.func.sum(Donation.amount)).scalar() or 0
+    total_expenses = db.session.query(db.func.sum(Expense.amount)).scalar() or 0
     recent_donations = Donation.query.order_by(Donation.donation_date.desc()).limit(5).all()
     
     return jsonify({
         'orphan_count': orphan_count,
         'adopted_count': adopted_count,
         'total_donations': total_donations,
+        'total_expenses': total_expenses,
         'recent_donations': [{
             'id': d.id,
             'donor_name': d.donor_name,
@@ -281,8 +352,18 @@ def create_default_admin():
         db.session.commit()
         print("Default admin created: username=admin, password=admin123")
 
+# Serve static files to support the HTML frontend
+@app.route('/')
+def index():
+    return app.send_static_file('index.html')
+
+@app.route('/<path:path>')
+def static_files(path):
+    return app.send_static_file(path)
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
         create_default_admin()
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')
+

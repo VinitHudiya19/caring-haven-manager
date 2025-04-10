@@ -53,6 +53,12 @@ The backend server will start on http://127.0.0.1:5000/
 - PUT `/api/members/<id>` - Update a member
 - DELETE `/api/members/<id>` - Delete a member
 
+### Expenses
+- GET `/api/expenses` - Get all expenses
+- POST `/api/expenses` - Add a new expense
+- PUT `/api/expenses/<id>` - Update an expense
+- DELETE `/api/expenses/<id>` - Delete an expense
+
 ### Dashboard
 - GET `/api/dashboard/stats` - Get dashboard statistics
 
