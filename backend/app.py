@@ -4,11 +4,9 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os
-from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-# Update CORS to allow requests from any origin
-CORS(app, resources={r"/api/*": {"origins": "*"}})
+CORS(app)
 
 # Database configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:password@localhost/balsadan'
@@ -17,17 +15,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 # Models
-class Admin(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    password_hash = db.Column(db.String(255), nullable=False)
-    
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
-        
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
-
 class Orphan(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -51,41 +38,7 @@ class Donation(db.Model):
     phone = db.Column(db.String(20))
     address = db.Column(db.String(255))
 
-class Member(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    role = db.Column(db.String(100), nullable=False)
-    phone = db.Column(db.String(20), nullable=False)
-    email = db.Column(db.String(100), nullable=False)
-    joined_date = db.Column(db.DateTime, default=datetime.utcnow)
-
-class Expense(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    description = db.Column(db.String(255), nullable=False)
-    amount = db.Column(db.Float, nullable=False)
-    expense_date = db.Column(db.DateTime, default=datetime.utcnow)
-    category = db.Column(db.String(100), nullable=False)
-    approved_by = db.Column(db.String(100))
-    receipt_url = db.Column(db.String(255))
-
-# Authentication Routes
-@app.route('/api/login', methods=['POST'])
-def login():
-    data = request.json
-    username = data.get('username')
-    password = data.get('password')
-    
-    if not username or not password:
-        return jsonify({'error': 'Missing username or password'}), 400
-    
-    admin = Admin.query.filter_by(username=username).first()
-    
-    if not admin or not admin.check_password(password):
-        return jsonify({'error': 'Invalid credentials'}), 401
-    
-    return jsonify({'success': True, 'username': admin.username}), 200
-
-# Orphan Routes
+# Routes
 @app.route('/api/orphans', methods=['GET'])
 def get_orphans():
     orphans = Orphan.query.all()
@@ -141,34 +94,6 @@ def add_orphan():
     
     return jsonify({'id': new_orphan.id, 'message': 'Orphan added successfully'}), 201
 
-@app.route('/api/orphans/<int:orphan_id>', methods=['PUT'])
-def update_orphan(orphan_id):
-    orphan = Orphan.query.get_or_404(orphan_id)
-    data = request.json
-    
-    orphan.name = data.get('name', orphan.name)
-    orphan.age = data.get('age', orphan.age)
-    orphan.gender = data.get('gender', orphan.gender)
-    orphan.medical_condition = data.get('medical_condition', orphan.medical_condition)
-    orphan.education_level = data.get('education_level', orphan.education_level)
-    orphan.background = data.get('background', orphan.background)
-    orphan.is_adopted = data.get('is_adopted', orphan.is_adopted)
-    orphan.photo_url = data.get('photo_url', orphan.photo_url)
-    
-    db.session.commit()
-    
-    return jsonify({'message': 'Orphan updated successfully'})
-
-@app.route('/api/orphans/<int:orphan_id>', methods=['DELETE'])
-def delete_orphan(orphan_id):
-    orphan = Orphan.query.get_or_404(orphan_id)
-    
-    db.session.delete(orphan)
-    db.session.commit()
-    
-    return jsonify({'message': 'Orphan deleted successfully'})
-
-# Donation Routes
 @app.route('/api/donations', methods=['GET'])
 def get_donations():
     donations = Donation.query.all()
@@ -205,134 +130,17 @@ def add_donation():
     
     return jsonify({'id': new_donation.id, 'message': 'Donation added successfully'}), 201
 
-# Member Routes
-@app.route('/api/members', methods=['GET'])
-def get_members():
-    members = Member.query.all()
-    result = []
-    
-    for member in members:
-        result.append({
-            'id': member.id,
-            'name': member.name,
-            'role': member.role,
-            'phone': member.phone,
-            'email': member.email,
-            'joined_date': member.joined_date
-        })
-        
-    return jsonify(result)
-
-@app.route('/api/members', methods=['POST'])
-def add_member():
-    data = request.json
-    new_member = Member(
-        name=data['name'],
-        role=data['role'],
-        phone=data['phone'],
-        email=data['email']
-    )
-    
-    db.session.add(new_member)
-    db.session.commit()
-    
-    return jsonify({'id': new_member.id, 'message': 'Member added successfully'}), 201
-
-@app.route('/api/members/<int:member_id>', methods=['PUT'])
-def update_member(member_id):
-    member = Member.query.get_or_404(member_id)
-    data = request.json
-    
-    member.name = data.get('name', member.name)
-    member.role = data.get('role', member.role)
-    member.phone = data.get('phone', member.phone)
-    member.email = data.get('email', member.email)
-    
-    db.session.commit()
-    
-    return jsonify({'message': 'Member updated successfully'})
-
-@app.route('/api/members/<int:member_id>', methods=['DELETE'])
-def delete_member(member_id):
-    member = Member.query.get_or_404(member_id)
-    
-    db.session.delete(member)
-    db.session.commit()
-    
-    return jsonify({'message': 'Member deleted successfully'})
-
-# Expense Routes
-@app.route('/api/expenses', methods=['GET'])
-def get_expenses():
-    expenses = Expense.query.all()
-    result = []
-    
-    for expense in expenses:
-        result.append({
-            'id': expense.id,
-            'description': expense.description,
-            'amount': expense.amount,
-            'expense_date': expense.expense_date,
-            'category': expense.category,
-            'approved_by': expense.approved_by,
-            'receipt_url': expense.receipt_url
-        })
-        
-    return jsonify(result)
-
-@app.route('/api/expenses', methods=['POST'])
-def add_expense():
-    data = request.json
-    new_expense = Expense(
-        description=data['description'],
-        amount=data['amount'],
-        category=data['category'],
-        approved_by=data.get('approved_by', ''),
-        receipt_url=data.get('receipt_url', '')
-    )
-    
-    db.session.add(new_expense)
-    db.session.commit()
-    
-    return jsonify({'id': new_expense.id, 'message': 'Expense added successfully'}), 201
-
-@app.route('/api/expenses/<int:expense_id>', methods=['PUT'])
-def update_expense(expense_id):
-    expense = Expense.query.get_or_404(expense_id)
-    data = request.json
-    
-    expense.description = data.get('description', expense.description)
-    expense.amount = data.get('amount', expense.amount)
-    expense.category = data.get('category', expense.category)
-    expense.approved_by = data.get('approved_by', expense.approved_by)
-    expense.receipt_url = data.get('receipt_url', expense.receipt_url)
-    
-    db.session.commit()
-    
-    return jsonify({'message': 'Expense updated successfully'})
-
-@app.route('/api/expenses/<int:expense_id>', methods=['DELETE'])
-def delete_expense(expense_id):
-    expense = Expense.query.get_or_404(expense_id)
-    
-    db.session.delete(expense)
-    db.session.commit()
-    
-    return jsonify({'message': 'Expense deleted successfully'})
-
 @app.route('/api/dashboard/stats', methods=['GET'])
 def get_dashboard_stats():
     orphan_count = Orphan.query.count()
     adopted_count = Orphan.query.filter_by(is_adopted=True).count()
     total_donations = db.session.query(db.func.sum(Donation.amount)).scalar() or 0
-    total_expenses = db.session.query(db.func.sum(Expense.amount)).scalar() or 0
     recent_donations = Donation.query.order_by(Donation.donation_date.desc()).limit(5).all()
     
     return jsonify({
         'orphan_count': orphan_count,
         'adopted_count': adopted_count,
         'total_donations': total_donations,
-        'total_expenses': total_expenses,
         'recent_donations': [{
             'id': d.id,
             'donor_name': d.donor_name,
@@ -342,28 +150,7 @@ def get_dashboard_stats():
         } for d in recent_donations]
     })
 
-# Create a default admin user
-def create_default_admin():
-    admin = Admin.query.filter_by(username='admin').first()
-    if not admin:
-        admin = Admin(username='admin')
-        admin.set_password('admin123')
-        db.session.add(admin)
-        db.session.commit()
-        print("Default admin created: username=admin, password=admin123")
-
-# Serve static files to support the HTML frontend
-@app.route('/')
-def index():
-    return app.send_static_file('index.html')
-
-@app.route('/<path:path>')
-def static_files(path):
-    return app.send_static_file(path)
-
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-        create_default_admin()
-    app.run(debug=True, host='0.0.0.0')
-
+    app.run(debug=True)
