@@ -1,0 +1,290 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - BalSadan</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <!-- Include Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+  <div id="app" class="min-h-screen flex">
+    <!-- Sidebar -->
+    <div id="sidebar" class="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
+      <div class="flex-1 flex flex-col min-h-0 bg-white border-r border-gray-200">
+        <div class="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
+          <div class="flex items-center justify-center flex-shrink-0 px-4">
+            <h1 class="text-2xl font-bold text-primary">BalSadan</h1>
+          </div>
+          <nav class="mt-8 flex-1 px-2 space-y-1">
+            <a href="dashboard.html" class="group flex items-center px-4 py-3 text-sm font-medium rounded-md bg-primary text-white">
+              <i class="fas fa-home mr-3 h-5 w-5"></i>
+              Dashboard
+            </a>
+            <a href="orphans.html" class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-600 hover:bg-primary-light hover:text-primary">
+              <i class="fas fa-users mr-3 h-5 w-5 text-gray-500 group-hover:text-primary"></i>
+              Orphans
+            </a>
+            <a href="donations.html" class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-600 hover:bg-primary-light hover:text-primary">
+              <i class="fas fa-hand-holding-heart mr-3 h-5 w-5 text-gray-500 group-hover:text-primary"></i>
+              Donations
+            </a>
+            <a href="expenses.html" class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-600 hover:bg-primary-light hover:text-primary">
+              <i class="fas fa-file-invoice-dollar mr-3 h-5 w-5 text-gray-500 group-hover:text-primary"></i>
+              Expenses
+            </a>
+            <a href="members.html" class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-600 hover:bg-primary-light hover:text-primary">
+              <i class="fas fa-user-plus mr-3 h-5 w-5 text-gray-500 group-hover:text-primary"></i>
+              Members
+            </a>
+          </nav>
+        </div>
+        <div class="flex-shrink-0 flex bg-primary-light p-4">
+          <div class="flex-shrink-0 w-full group block">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-gray-700" id="adminName">Admin User</p>
+                <p class="text-xs text-gray-500">Signed in</p>
+              </div>
+              <button id="logoutBtn" class="p-1 rounded-full hover:bg-gray-200 transition-colors duration-200">
+                <i class="fas fa-sign-out-alt h-5 w-5 text-gray-500"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile menu button -->
+    <div class="fixed top-4 left-4 z-50 md:hidden">
+      <button type="button" id="mobileMenuBtn" class="p-2 rounded-md text-gray-700 hover:bg-primary-light hover:text-primary transition-colors duration-200">
+        <i class="fas fa-bars h-6 w-6" id="menuIcon"></i>
+      </button>
+    </div>
+
+    <!-- Mobile sidebar -->
+    <div id="mobileSidebar" class="fixed inset-0 flex flex-col w-64 z-40 bg-white shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out md:hidden">
+      <!-- Same content as desktop sidebar -->
+      <div class="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
+        <div class="flex items-center justify-center flex-shrink-0 px-4">
+          <h1 class="text-2xl font-bold text-primary">BalSadan</h1>
+        </div>
+        <nav class="mt-8 flex-1 px-2 space-y-1">
+          <a href="dashboard.html" class="group flex items-center px-4 py-3 text-sm font-medium rounded-md bg-primary text-white">
+            <i class="fas fa-home mr-3 h-5 w-5"></i>
+            Dashboard
+          </a>
+          <a href="orphans.html" class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-600 hover:bg-primary-light hover:text-primary">
+            <i class="fas fa-users mr-3 h-5 w-5 text-gray-500 group-hover:text-primary"></i>
+            Orphans
+          </a>
+          <a href="donations.html" class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-600 hover:bg-primary-light hover:text-primary">
+            <i class="fas fa-hand-holding-heart mr-3 h-5 w-5 text-gray-500 group-hover:text-primary"></i>
+            Donations
+          </a>
+          <a href="expenses.html" class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-600 hover:bg-primary-light hover:text-primary">
+            <i class="fas fa-file-invoice-dollar mr-3 h-5 w-5 text-gray-500 group-hover:text-primary"></i>
+            Expenses
+          </a>
+          <a href="members.html" class="group flex items-center px-4 py-3 text-sm font-medium rounded-md text-gray-600 hover:bg-primary-light hover:text-primary">
+            <i class="fas fa-user-plus mr-3 h-5 w-5 text-gray-500 group-hover:text-primary"></i>
+            Members
+          </a>
+        </nav>
+      </div>
+      <div class="flex-shrink-0 flex bg-primary-light p-4">
+        <div class="flex-shrink-0 w-full group block">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-700" id="mobileAdminName">Admin User</p>
+              <p class="text-xs text-gray-500">Signed in</p>
+            </div>
+            <button id="mobileLogoutBtn" class="p-1 rounded-full hover:bg-gray-200 transition-colors duration-200">
+              <i class="fas fa-sign-out-alt h-5 w-5 text-gray-500"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="md:pl-64 flex flex-col flex-1 w-full">
+      <main class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-8xl mx-auto animate-fade-in">
+        <div class="mb-8">
+          <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard</h1>
+          <p class="mt-2 text-sm text-gray-600">Welcome to BalSadan Orphanage Management System</p>
+        </div>
+        
+        <!-- Stats Row -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <!-- Orphan Stats -->
+          <div class="p-6 bg-white rounded-lg border shadow-sm">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 p-3 rounded-lg bg-primary-light text-primary">
+                <i class="fas fa-users"></i>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Total Orphans</dt>
+                  <dd>
+                    <div class="text-lg font-semibold text-gray-900" id="orphanCount">...</div>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+            <div class="mt-2">
+              <span class="text-sm font-medium text-green-600">
+                <i class="fas fa-arrow-up"></i> 12%
+              </span>
+              <span class="text-sm text-gray-500 ml-2">from previous month</span>
+            </div>
+          </div>
+          
+          <!-- Donations Stats -->
+          <div class="p-6 bg-white rounded-lg border shadow-sm">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 p-3 rounded-lg bg-primary-light text-primary">
+                <i class="fas fa-hand-holding-heart"></i>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Total Donations</dt>
+                  <dd>
+                    <div class="text-lg font-semibold text-gray-900" id="donationsAmount">...</div>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+            <div class="mt-2">
+              <span class="text-sm font-medium text-green-600">
+                <i class="fas fa-arrow-up"></i> 8%
+              </span>
+              <span class="text-sm text-gray-500 ml-2">from previous month</span>
+            </div>
+          </div>
+          
+          <!-- Adoptions Stats -->
+          <div class="p-6 bg-white rounded-lg border shadow-sm">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 p-3 rounded-lg bg-primary-light text-primary">
+                <i class="fas fa-home"></i>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Adoptions</dt>
+                  <dd>
+                    <div class="text-lg font-semibold text-gray-900" id="adoptionsCount">...</div>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+            <div class="mt-2">
+              <span class="text-sm font-medium text-green-600">
+                <i class="fas fa-arrow-up"></i> 5%
+              </span>
+              <span class="text-sm text-gray-500 ml-2">from previous month</span>
+            </div>
+          </div>
+          
+          <!-- Expenses Stats -->
+          <div class="p-6 bg-white rounded-lg border shadow-sm">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 p-3 rounded-lg bg-primary-light text-primary">
+                <i class="fas fa-file-invoice-dollar"></i>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Monthly Expenses</dt>
+                  <dd>
+                    <div class="text-lg font-semibold text-gray-900" id="expensesAmount">...</div>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+            <div class="mt-2">
+              <span class="text-sm font-medium text-red-600">
+                <i class="fas fa-arrow-down"></i> 3%
+              </span>
+              <span class="text-sm text-gray-500 ml-2">from previous month</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Charts and Recent Activities -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- Donations Chart -->
+          <div class="lg:col-span-2">
+            <div class="bg-white rounded-lg border shadow-sm">
+              <div class="px-6 py-4 border-b">
+                <h3 class="text-lg font-semibold">Donation Trends</h3>
+              </div>
+              <div class="p-6">
+                <div class="h-[300px]" id="donationsChart">
+                  <!-- Chart will be rendered here -->
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Recent Activities -->
+          <div class="space-y-6">
+            <!-- Recent Orphans -->
+            <div class="bg-white rounded-lg border shadow-sm">
+              <div class="flex flex-row items-center justify-between px-6 py-4 border-b">
+                <h3 class="text-lg font-semibold">Recent Orphans</h3>
+                <a href="orphans.html" class="flex items-center text-sm text-primary hover:text-primary-dark">
+                  View All
+                  <i class="fas fa-chevron-right ml-1 h-4 w-4"></i>
+                </a>
+              </div>
+              <div class="p-6">
+                <div class="space-y-4" id="recentOrphans">
+                  <!-- Orphans will be loaded here -->
+                  <div class="flex items-center justify-center py-6 text-gray-500">
+                    <i class="fas fa-spinner fa-spin mr-2"></i> Loading...
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Recent Donations -->
+            <div class="bg-white rounded-lg border shadow-sm">
+              <div class="flex flex-row items-center justify-between px-6 py-4 border-b">
+                <h3 class="text-lg font-semibold">Recent Donations</h3>
+                <a href="donations.html" class="flex items-center text-sm text-primary hover:text-primary-dark">
+                  View All
+                  <i class="fas fa-chevron-right ml-1 h-4 w-4"></i>
+                </a>
+              </div>
+              <div class="p-6">
+                <div class="space-y-4" id="recentDonations">
+                  <!-- Donations will be loaded here -->
+                  <div class="flex items-center justify-center py-6 text-gray-500">
+                    <i class="fas fa-spinner fa-spin mr-2"></i> Loading...
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Toast notifications -->
+  <div id="toastContainer" class="fixed top-4 right-4 z-50 flex flex-col gap-2"></div>
+
+  <!-- Include Chart.js for charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- JavaScript -->
+  <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/toast.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
