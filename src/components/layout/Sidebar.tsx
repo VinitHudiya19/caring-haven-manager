@@ -1,28 +1,50 @@
 
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import {
   Home,
   Users,
   HeartHandshake,
   BarChart3,
-  Settings,
   Menu,
   X,
+  LogOut,
+  UserPlus,
 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: Home },
   { name: "Orphans", href: "/orphans", icon: Users },
   { name: "Donations", href: "/donations", icon: HeartHandshake },
   { name: "Reports", href: "/reports", icon: BarChart3 },
-  { name: "Settings", href: "/settings", icon: Settings },
+  { name: "Members", href: "/members", icon: UserPlus },
 ];
 
 export function Sidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
+  const [adminName, setAdminName] = useState("Admin User");
+
+  useEffect(() => {
+    const name = localStorage.getItem("adminName");
+    if (name) {
+      setAdminName(name);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("adminAuth");
+    localStorage.removeItem("adminName");
+    toast({
+      title: "Logged out",
+      description: "You have been logged out successfully.",
+    });
+    navigate("/login");
+  };
 
   return (
     <>
@@ -83,11 +105,17 @@ export function Sidebar() {
         </div>
         <div className="flex-shrink-0 flex bg-primary-light p-4">
           <div className="flex-shrink-0 w-full group block">
-            <div className="flex items-center">
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-700">Admin User</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-700">{adminName}</p>
                 <p className="text-xs text-gray-500">Signed in</p>
               </div>
+              <button 
+                onClick={handleLogout}
+                className="p-1 rounded-full hover:bg-gray-200 transition-colors duration-200"
+              >
+                <LogOut className="h-5 w-5 text-gray-500" />
+              </button>
             </div>
           </div>
         </div>
@@ -130,11 +158,17 @@ export function Sidebar() {
           </div>
           <div className="flex-shrink-0 flex bg-primary-light p-4">
             <div className="flex-shrink-0 w-full group block">
-              <div className="flex items-center">
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-700">Admin User</p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-700">{adminName}</p>
                   <p className="text-xs text-gray-500">Signed in</p>
                 </div>
+                <button 
+                  onClick={handleLogout}
+                  className="p-1 rounded-full hover:bg-gray-200 transition-colors duration-200"
+                >
+                  <LogOut className="h-5 w-5 text-gray-500" />
+                </button>
               </div>
             </div>
           </div>
