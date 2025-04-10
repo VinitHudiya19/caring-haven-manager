@@ -50,7 +50,7 @@ export function Sidebar() {
       >
         <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
           <div className="flex items-center justify-center flex-shrink-0 px-4">
-            <h1 className="text-2xl font-bold text-primary">CaringHaven</h1>
+            <h1 className="text-2xl font-bold text-primary">BalSadan</h1>
           </div>
           <nav className="mt-8 flex-1 px-2 space-y-1">
             {navigation.map((item) => {
@@ -98,7 +98,7 @@ export function Sidebar() {
         <div className="flex-1 flex flex-col min-h-0 bg-white border-r border-gray-200">
           <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
             <div className="flex items-center justify-center flex-shrink-0 px-4">
-              <h1 className="text-2xl font-bold text-primary">CaringHaven</h1>
+              <h1 className="text-2xl font-bold text-primary">BalSadan</h1>
             </div>
             <nav className="mt-8 flex-1 px-2 space-y-1">
               {navigation.map((item) => {

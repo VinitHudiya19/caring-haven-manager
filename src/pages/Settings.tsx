@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Button } from "@/components/ui/button";
@@ -14,13 +13,13 @@ import { toast } from "@/hooks/use-toast";
 const Settings = () => {
   // Organization Settings
   const [organizationSettings, setOrganizationSettings] = useState({
-    name: "CaringHaven Orphanage",
-    email: "admin@caringhaven.org",
+    name: "BalSadan Orphanage",
+    email: "admin@balsadan.org",
     phone: "+1 (555) 123-4567",
     address: "123 Main Street, Cityville, State 12345",
-    description: "CaringHaven is a non-profit organization dedicated to providing care, education, and support for orphaned children.",
+    description: "BalSadan is a non-profit organization dedicated to providing care, education, and support for orphaned children.",
     taxId: "12-3456789",
-    website: "https://caringhaven.org",
+    website: "https://balsadan.org",
   });
 
   // Notification Settings
@@ -35,9 +34,9 @@ const Settings = () => {
   const [databaseSettings, setDatabaseSettings] = useState({
     host: "localhost",
     port: "3306",
-    username: "admin",
+    username: "root",
     password: "********",
-    database: "caringhaven_db",
+    database: "balsadan",
   });
 
   const handleOrganizationChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -68,11 +67,21 @@ const Settings = () => {
     });
   };
 
-  const handleSaveDatabase = () => {
-    toast({
-      title: "Settings Saved",
-      description: "Database connection settings have been updated.",
-    });
+  const handleSaveDatabase = async () => {
+    try {
+      // In a real app, this would send the updated database settings to the backend
+      // For now, we'll just show a success toast
+      toast({
+        title: "Settings Saved",
+        description: "Database connection settings have been updated.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update database settings.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
